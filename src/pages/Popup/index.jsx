@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { render } from 'react-dom';
 import Popup from './Popup';
+import 'antd/dist/antd.css';
 import './index.css';
 /**
  * 获取当前标签页ID

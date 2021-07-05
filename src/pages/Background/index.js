@@ -54,7 +54,7 @@ chrome.action.onClicked.addListener(tab => {
         chrome.windows.update(inspector.popup.id, { focused: true });
       } else {
         // 创建监控弹窗
-        chrome.windows.create({ url: `popup.html?${tabId}`, type: "popup", width: 550, height: 700 }, wnd => {
+        chrome.windows.create({ url: `popup.html?${tabId}`, type: "popup", width: 800, height: 600 }, wnd => {
           inspectors.push({ id: tabId, popup: wnd, active: true });
         });
       }

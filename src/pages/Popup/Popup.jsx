@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Panel from 'react-flex-panel';
-import FontAwesome from 'react-fontawesome';
+import { Row, Col } from 'antd';
+// import Panel from 'react-flex-panel';
+// import FontAwesome from 'react-fontawesome';
 import ReactJson from 'react-json-view';
+import ScoketList from './component/ScoketList';
 import './Popup.css';
 
 const reactJsonProps = {
@@ -14,7 +16,7 @@ const reactJsonProps = {
 
 export default class Popup extends React.Component {
   _uniqueId = 0;
-  state = { frames: [], activeId: null, capturing: false };
+  state = { arrScokets: [], activeId: null, capturing: false };
   constructor(props) {
     super(props);
     props.handlers['Network.webSocketFrameReceived'] =
@@ -23,55 +25,53 @@ export default class Popup extends React.Component {
       this.webSocketFrameSent.bind(this);
   }
 
-  webSocketFrameReceived({ timestamp, response }) {
-    this.addFrame('incoming', timestamp, response);
+  webSocketFrameReceived({ requestId, timestamp, response }) {
+    this.runOnceSocket({ type: 'received', requestId, timestamp, response });
   }
-  webSocketFrameSent({ timestamp, response }) {
-    this.addFrame('outgoing', timestamp, response);
+  webSocketFrameSent({ requestId, timestamp, response }) {
+    this.runOnceSocket({ type: 'sent', requestId, timestamp, response });
   }
 
-  addFrame(type, timestamp, response) {
-    const { opcode, payloadData } = response;
-    let rtnData = payloadData;
+  runOnceSocket({ type, requestId, timestamp, response }) {
+    let { opcode, payloadData } = response;
     if (opcode === 1 || opcode === 2) {
+      // JSON
       if (opcode === 1) {
         try {
-          rtnData = JSON.parse(rtnData);
+          payloadData = JSON.parse(payloadData);
         } catch (err) {
           console.err(err);
         }
       }
     }
-
-    const frame = {
+    const onceScoket = {
       id: ++this._uniqueId,
       type,
-      rtnData,
+      payloadData,
     };
     this.setState((state) => {
-      const { frames } = state;
+      const { arrScokets } = state;
       return {
         ...state,
-        frames: [...frames, frame],
+        arrScokets: [...arrScokets, onceScoket],
       };
     });
   }
 
   render() {
-    const { frames, activeId } = this.state;
-    console.log(frames);
+    const { arrScokets, activeId } = this.state;
     return (
-      <Panel cols className="App">
-        <Panel resizable style={{ borderRight: '1px solid #CCC' }}>
-          
-        </Panel>
-        <Panel>
-          {frames.map((item) => {
-            const { id, rtnData } = item;
-            return <ReactJson src={rtnData} {...reactJsonProps} />;
+      <Row justify="space-between">
+        <Col span={8}>
+          <ScoketList arrScokets={arrScokets} />
+        </Col>
+        <Col span={16}>
+          {arrScokets.map((item) => {
+            const { id, payloadData } = item;
+            return <ReactJson key={id} src={payloadData} {...reactJsonProps} />;
           })}
-        </Panel>
-      </Panel>
+        </Col>
+      </Row>
     );
   }
 }
