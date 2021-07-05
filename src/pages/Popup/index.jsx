@@ -13,12 +13,6 @@ import './index.css';
 
 // 前面的 url: "popup.html?" + tabId
 const tabId = parseInt(window.location.search.substr(1));
-
-// let handlers = {
-//   'Network.webSocketFrameSent': () => {},
-//   'Network.webSocketFrameReceived': () => {},
-// };
-
 const handlers = {};
 
 /**
