@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'antd';
-// import Panel from 'react-flex-panel';
-// import FontAwesome from 'react-fontawesome';
 import ReactJson from 'react-json-view';
 import ScoketList from './component/ScoketList';
 import './Popup.css';
@@ -25,12 +23,30 @@ export default class Popup extends React.Component {
       this.webSocketFrameSent.bind(this);
   }
 
+  // 触发时间
+  getTime(timestamp) {
+    if (this._issueTime == null) {
+      this._issueTime = timestamp;
+      this._issueWallTime = new Date().getTime();
+    }
+    return new Date((timestamp - this._issueTime) * 1000 + this._issueWallTime);
+  }
+
   webSocketFrameReceived({ requestId, timestamp, response }) {
     this.runOnceSocket({ type: 'received', requestId, timestamp, response });
   }
   webSocketFrameSent({ requestId, timestamp, response }) {
     this.runOnceSocket({ type: 'sent', requestId, timestamp, response });
   }
+
+  handleClickSocket = (id) => {
+    this.setState((state) => {
+      return {
+        ...state,
+        activeId: id,
+      };
+    });
+  };
 
   runOnceSocket({ type, requestId, timestamp, response }) {
     let { opcode, payloadData } = response;
@@ -47,6 +63,8 @@ export default class Popup extends React.Component {
     const onceScoket = {
       id: ++this._uniqueId,
       type,
+      requestId,
+      time: this.getTime(timestamp),
       payloadData,
     };
     this.setState((state) => {
@@ -60,16 +78,24 @@ export default class Popup extends React.Component {
 
   render() {
     const { arrScokets, activeId } = this.state;
+    const curScoket = arrScokets.filter((item) => item.id === activeId)[0];
+    console.log(curScoket);
     return (
       <Row justify="space-between">
         <Col span={8}>
-          <ScoketList arrScokets={arrScokets} />
+          <ScoketList
+            arrScokets={arrScokets}
+            handleClickSocket={this.handleClickSocket}
+          />
         </Col>
         <Col span={16}>
-          {arrScokets.map((item) => {
+          {/* {arrScokets.map((item) => {
             const { id, payloadData } = item;
             return <ReactJson key={id} src={payloadData} {...reactJsonProps} />;
-          })}
+          })} */}
+          {curScoket && curScoket.payloadData && (
+            <ReactJson src={curScoket.payloadData} {...reactJsonProps} />
+          )}
         </Col>
       </Row>
     );
