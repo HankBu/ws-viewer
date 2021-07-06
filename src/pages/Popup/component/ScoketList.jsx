@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Table } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-const Comp = ({ arrScokets, handleClickSocket }) => {
+import { Row, Col, Table, Button } from 'antd';
+import {
+  UpCircleFilled,
+  DownCircleFilled,
+  StopOutlined,
+} from '@ant-design/icons';
+const Comp = ({ arrScokets, clearAllScokets, handleSelectSocket }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
-    handleClickSocket(selectedRowKeys[0]);
-  }, [selectedRowKeys, handleClickSocket]);
+    handleSelectSocket(selectedRowKeys[0]);
+  }, [selectedRowKeys, handleSelectSocket]);
 
   const columns = [
     {
@@ -18,7 +22,11 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
         const { payloadData } = record;
         return (
           <>
-            {text === 'sent' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
+            {text === 'sent' ? (
+              <UpCircleFilled style={{ color: '#4eb61b' }} />
+            ) : (
+              <DownCircleFilled style={{ color: '#FFA500' }} />
+            )}
             <span style={{ margin: '0 0 0 5px' }}>
               {JSON.stringify(payloadData)}
             </span>
@@ -57,8 +65,8 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
 
   return (
     <>
-      <Row>
-
+      <Row style={{ background: '#f8f8f8' }}>
+        <Button type="text" icon={<StopOutlined />} onClick={clearAllScokets} />
       </Row>
       <Table
         rowKey="id"
@@ -72,11 +80,13 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
             onClick: () => {
               setSelectedRowKeys([record.id]);
             },
-          }
+          };
         }}
         // 奇技淫巧
-        rowClassName={(record)=>{
-          return record.id === selectedRowKeys[0] ? 'ant-table-row-selected' : ''
+        rowClassName={(record) => {
+          return record.id === selectedRowKeys[0]
+            ? 'ant-table-row-selected'
+            : '';
         }}
         // rowSelection={{
         //   type: 'radio',

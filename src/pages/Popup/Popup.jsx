@@ -14,7 +14,7 @@ const reactJsonProps = {
 
 export default class Popup extends React.Component {
   _uniqueId = 0;
-  state = { arrScokets: [], activeId: null, capturing: false };
+  state = { arrScokets: [], activeId: '', capturing: false };
   constructor(props) {
     super(props);
     props.handlers['Network.webSocketFrameReceived'] =
@@ -39,7 +39,17 @@ export default class Popup extends React.Component {
     this.runOnceSocket({ type: 'sent', requestId, timestamp, response });
   }
 
-  handleClickSocket = (id) => {
+  clearAllScokets = () => {
+    this.setState((state) => {
+      return {
+        ...state,
+        arrScokets: [],
+        activeId: null
+      };
+    });
+  }
+
+  handleSelectSocket = (id) => {
     this.setState((state) => {
       return {
         ...state,
@@ -77,14 +87,15 @@ export default class Popup extends React.Component {
   }
 
   render() {
-    const { arrScokets, activeId } = this.state;
+    const { arrScokets, activeId = '' } = this.state;
     const curScoket = arrScokets.filter((item) => item.id === activeId)[0];
     return (
       <Row justify="space-between">
         <Col span={10}>
           <ScoketList
             arrScokets={arrScokets}
-            handleClickSocket={this.handleClickSocket}
+            clearAllScokets={this.clearAllScokets}
+            handleSelectSocket={this.handleSelectSocket}
           />
         </Col>
         <Col span={14}>
@@ -92,9 +103,11 @@ export default class Popup extends React.Component {
             const { id, payloadData } = item;
             return <ReactJson key={id} src={payloadData} {...reactJsonProps} />;
           })} */}
-          {curScoket && curScoket.payloadData && (
-            <ReactJson src={curScoket.payloadData} {...reactJsonProps} />
-          )}
+          {
+            activeId !== '' ? curScoket && curScoket.payloadData && (
+              <ReactJson src={curScoket.payloadData} {...reactJsonProps} />
+            ) : <section style={{paddingTop: '100px', textAlign: 'center', fontSize: '20px'}}><p>Running webScoket for left capture</p><p>Then select req or res to view data</p></section>
+          }
         </Col>
       </Row>
     );
