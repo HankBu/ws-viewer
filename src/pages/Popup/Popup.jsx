@@ -79,16 +79,15 @@ export default class Popup extends React.Component {
   render() {
     const { arrScokets, activeId } = this.state;
     const curScoket = arrScokets.filter((item) => item.id === activeId)[0];
-    console.log(curScoket);
     return (
       <Row justify="space-between">
-        <Col span={8}>
+        <Col span={10}>
           <ScoketList
             arrScokets={arrScokets}
             handleClickSocket={this.handleClickSocket}
           />
         </Col>
-        <Col span={16}>
+        <Col span={14}>
           {/* {arrScokets.map((item) => {
             const { id, payloadData } = item;
             return <ReactJson key={id} src={payloadData} {...reactJsonProps} />;

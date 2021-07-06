@@ -10,7 +10,7 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
 
   const columns = [
     {
-      title: '请求/返回',
+      title: 'Req / Res',
       dataIndex: 'type',
       key: 'type',
       ellipsis: true,
@@ -27,16 +27,16 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
       },
     },
     {
-      title: '长度',
+      title: 'Length',
       dataIndex: 'payloadData',
       key: 'payloadData',
-      width: '50px',
+      width: '70px',
       render: (item) => {
         return <>{JSON.stringify(item).length}</>;
       },
     },
     {
-      title: '时间',
+      title: 'Time',
       dataIndex: 'time',
       key: 'time',
       width: '120px',
@@ -57,6 +57,9 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
 
   return (
     <>
+      <Row>
+
+      </Row>
       <Table
         rowKey="id"
         dataSource={arrScokets}
@@ -71,11 +74,14 @@ const Comp = ({ arrScokets, handleClickSocket }) => {
             },
           }
         }}
-        rowSelection={{
-          type: 'radio',
-          columnWidth: 0,
-          selectedRowKeys,
+        // 奇技淫巧
+        rowClassName={(record)=>{
+          return record.id === selectedRowKeys[0] ? 'ant-table-row-selected' : ''
         }}
+        // rowSelection={{
+        //   type: 'radio',
+        //   selectedRowKeys,
+        // }}
       />
     </>
   );
